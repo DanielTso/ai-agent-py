@@ -62,19 +62,19 @@ src/construction/
 │   ├── risk_forecaster.py     # Tier 1: hourly risk prediction
 │   ├── document_intelligence.py  # Tier 1: semantic doc search
 │   ├── critical_path.py       # Tier 1: Monte Carlo schedule optimization
-│   ├── compliance_verifier.py # Tier 1: BIM/code compliance
+│   ├── compliance_verifier.py # Tier 1: BIM/code + ICC + Uptime Tier
 │   ├── supply_chain.py        # Tier 1: vendor/shipment monitoring
 │   ├── financial_intelligence.py  # Tier 2: EVM, cash flow, change orders
 │   ├── stakeholder_communication.py  # Tier 2: auto-draft reports/notices
 │   ├── workforce_labor.py     # Tier 2: crew productivity, certifications
 │   ├── commissioning_turnover.py  # Tier 3: IST sequencing, punch lists
-│   ├── environmental_sustainability.py  # Tier 3: SWPPP, LEED, carbon
+│   ├── environmental_sustainability.py  # Tier 3: SWPPP, LEED, carbon, EPA
 │   ├── claims_dispute.py      # Tier 3: contemporaneous records, delay analysis
 │   ├── site_logistics.py      # Tier 3: crane/staging/headcount
-│   └── safety_compliance.py   # Tier 3: OSHA/MSHA/NIOSH
-├── tools/                     # 23 tools (all subclass Tool ABC)
+│   └── safety_compliance.py   # Tier 3: OSHA/MSHA/NIOSH/NFPA
+├── tools/                     # 27 tools (all subclass Tool ABC)
 ├── schemas/                   # 15 Pydantic schema modules
-├── integrations/              # 13 external API clients
+├── integrations/              # 17 external API clients
 ├── api/
 │   ├── app.py                 # FastAPI factory + health endpoint
 │   ├── deps.py                # Dependency injection
@@ -115,6 +115,10 @@ The orchestrator (`agents/orchestrator.py`) is rule-based (not AI-powered). Key 
 - Safety stop-work → IMMEDIATE SMS + Critical Path hold + Site Logistics restrict
 - Document contradiction → Compliance check + Communication draft RFI
 - Budget variance >10% → Risk reassess + Communication draft owner report
+- NFPA violation → Compliance focused check + Risk reassess
+- Tier certification risk → Critical Path reoptimize + Risk reassess
+- ICC code violation → Risk reassess
+- EPA enforcement risk → Risk reassess + Site Logistics restrict + SMS if >$250k
 - Escalation threshold: >$250k impact OR safety-critical → SMS to PM
 
 ## Code Style
@@ -140,8 +144,9 @@ The orchestrator (`agents/orchestrator.py`) is rule-based (not AI-powered). Key 
 | Risk prediction | Risk Forecaster | Does not create tickets or schedule changes |
 | Document answers | Document Intelligence | Does not modify documents |
 | Schedule changes | Critical Path Optimizer | Never auto-applies (creates approval requests) |
-| BIM/code compliance | Compliance Verifier | Does not do safety regulation checks |
-| OSHA/MSHA/NIOSH | Safety Compliance | Only agent that can recommend stop-work |
+| BIM/code + ICC + Uptime Tier | Compliance Verifier | Does not do safety regulation checks |
+| OSHA/MSHA/NIOSH/NFPA | Safety Compliance | Only agent that can recommend stop-work |
+| EPA/SWPPP/LEED | Environmental & Sustainability | Does not issue stop-work (Safety does) |
 | Budget/cost | Financial Intelligence | Does not approve spend |
 | External comms | Stakeholder Communication | Does not make decisions, only drafts |
 | Site operations | Site Logistics | Does not enforce safety |

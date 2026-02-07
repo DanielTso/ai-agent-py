@@ -11,16 +11,16 @@ $500k/day penalty exposure. Zero tolerance for operational downtime.
 | 1 | **Risk Forecaster** | Predict schedule/cost/safety risks 14+ days ahead | Hourly |
 | 2 | **Document Intelligence** | Semantic search across 10k+ docs with construction ontology | On-demand |
 | 3 | **Critical Path Optimizer** | Dynamic resequencing + Monte Carlo simulation | On-demand |
-| 4 | **Compliance Verifier** | Verify installations against BIM + codes | Twice daily |
+| 4 | **Compliance Verifier** | Verify installations against BIM + codes + ICC + Uptime Tier | Twice daily |
 | 5 | **Supply Chain Resilience** | Monitor 50+ vendors, track shipments, find alternatives | Every 4h |
 | 6 | **Financial Intelligence** | Earned value (CPI/SPI/EAC), cash flow, change orders | Daily |
 | 7 | **Stakeholder Communication** | Auto-draft owner reports, RFI responses, sub notices | On-demand |
 | 8 | **Workforce & Labor** | Crew productivity, labor forecasting, certification tracking | Daily |
 | 9 | **Commissioning & Turnover** | IST sequencing, punch list intelligence, turnover tracking | Daily |
-| 10 | **Environmental & Sustainability** | SWPPP compliance, LEED tracking, carbon footprint | Daily |
+| 10 | **Environmental & Sustainability** | SWPPP, LEED, carbon footprint, EPA compliance | Daily |
 | 11 | **Claims & Dispute Prevention** | Contemporaneous records, delay analysis, notice tracking | Continuous |
 | 12 | **Site Logistics** | Crane/hoist scheduling, material staging, headcount | Real-time |
-| 13 | **Safety Compliance** | OSHA/MSHA/NIOSH regulatory compliance, stop-work authority | Continuous |
+| 13 | **Safety Compliance** | OSHA/MSHA/NIOSH/NFPA regulatory compliance, stop-work authority | Continuous |
 
 Plus a **rule-based Orchestrator** that coordinates cross-agent triggers, generates 6AM daily briefs, deduplicates alerts, and escalates critical events via SMS.
 
@@ -74,16 +74,16 @@ src/
 ├── ai_agent/              # Core CLI agent (Calculator, CurrentTime, WebSearch)
 └── construction/          # 13-agent construction PM ecosystem
     ├── agents/            # 13 agents + orchestrator + base class
-    ├── tools/             # 23 tools (weather, OSHA, BIM, Monte Carlo, etc.)
+    ├── tools/             # 27 tools (weather, OSHA, BIM, Monte Carlo, NFPA, EPA, ICC, Tier, etc.)
     ├── schemas/           # 15 Pydantic schema modules
-    ├── integrations/      # 13 external API clients (Procore, Autodesk, P6, etc.)
+    ├── integrations/      # 17 external API clients (Procore, Autodesk, P6, NFPA, EPA, ICC, Uptime, etc.)
     ├── api/routers/       # 16 FastAPI routers
     ├── db/                # 27+ SQLAlchemy models, repositories, seed data
     ├── redis_/            # Client, pub/sub, shared memory
     └── tasks/             # Celery app + scheduled tasks
 
 frontend/                  # Next.js 15 dashboard (15 pages, 11+ components)
-tests/                     # 487 tests (agents, tools, API, integrations, E2E)
+tests/                     # 559 tests (agents, tools, API, integrations, E2E)
 ```
 
 ## Cross-Agent Intelligence
@@ -105,6 +105,15 @@ Safety stop-work recommended
   → Site Logistics restricts zone access
   → Claims logs safety event
   → Financial assesses stop-work cost
+
+NFPA fire code violation detected
+  → Compliance Verifier focused check
+  → Risk Forecaster reassesses
+
+EPA enforcement risk identified
+  → Risk Forecaster reassesses
+  → Site Logistics restricts affected area
+  → SMS escalation if >$250k exposure
 ```
 
 ## Dashboard
@@ -114,10 +123,11 @@ Safety stop-work recommended
 - **Daily Brief** — Top 3 threats, 2 quality gaps, 1 acceleration opportunity
 - **Risk Heat Map** — 5x5 probability/impact grid
 - **Schedule** — Critical path Gantt + Monte Carlo results
-- **Safety** — TRIR/DART gauges, OSHA 300 log, inspection readiness
+- **Safety** — TRIR/DART gauges, OSHA 300 log, NFPA/NEC compliance, inspection readiness
 - **Approvals** — One-click approve/reject with full transparency logs
 - **Agent Monitor** — Status of all 13 agents with trigger buttons
-- Plus pages for documents, compliance, supply chain, financial, workforce, commissioning, environmental, claims, and site logistics
+- **Compliance** — BIM deviations, ICC building codes, Uptime Institute Tier certification
+- Plus pages for documents, supply chain, financial, workforce, commissioning, environmental (with EPA), claims, and site logistics
 
 ## Configuration
 
@@ -131,12 +141,13 @@ Key environment variables:
 - `ANTHROPIC_API_KEY` — Claude API key (required)
 - `DATABASE_URL` — PostgreSQL connection string
 - `REDIS_URL` — Redis connection string
-- API keys for Procore, Autodesk, Primavera, Portcast, Twilio, OpenWeatherMap, etc.
+- API keys for Procore, Autodesk, Primavera, Portcast, Twilio, OpenWeatherMap
+- Regulatory API keys: `NFPA_API_KEY`, `EPA_ECHO_API_KEY`, `ICC_API_KEY`, `UPTIME_API_KEY`
 
 ## Testing
 
 ```bash
-# Run all 487 tests
+# Run all 559 tests
 uv run pytest
 
 # By category
