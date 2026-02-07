@@ -5,6 +5,8 @@ import operator
 from abc import ABC, abstractmethod
 from datetime import UTC, datetime
 
+from duckduckgo_search import DDGS
+
 
 class Tool(ABC):
     """Base class for all agent tools."""
@@ -123,3 +125,41 @@ class CurrentTime(Tool):
 
     def execute(self, **kwargs) -> str:
         return datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
+
+
+class WebSearch(Tool):
+    """Search the web using DuckDuckGo."""
+
+    name = "web_search"
+    description = (
+        "Search the web for current information using DuckDuckGo."
+        " Returns titles, URLs, and snippets."
+    )
+
+    def get_input_schema(self) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "The search query to look up on the web",
+                },
+            },
+            "required": ["query"],
+        }
+
+    def execute(self, **kwargs) -> str:
+        query = kwargs["query"]
+        try:
+            results = DDGS().text(query, max_results=5)
+            if not results:
+                return "No results found."
+            lines = []
+            for r in results:
+                lines.append(f"Title: {r['title']}")
+                lines.append(f"URL: {r['href']}")
+                lines.append(f"Snippet: {r['body']}")
+                lines.append("")
+            return "\n".join(lines).strip()
+        except Exception as exc:
+            return f"Error performing search: {exc}"
