@@ -2,6 +2,68 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2026-02-07
+
+### Added
+
+#### 4 New Regulatory Bodies
+- **NFPA/NEC** — fire protection, NEC electrical code, life safety, sprinkler/alarm,
+  egress checks (NFPA 70/72/101/13/80)
+- **Uptime Institute** — Tier I-IV requirements, redundancy verification, concurrent
+  maintainability, fault tolerance, certification status tracking
+- **EPA** — NPDES discharge permits, CAA air quality, RCRA hazardous waste,
+  stormwater CGP compliance, NEPA review status
+- **ICC Building Codes** — IBC structural/occupancy/egress, IFC fire code,
+  IMC mechanical, IPC plumbing, IECC energy conservation
+
+#### 4 New Integration Clients
+- `NFPAClient` — NFPA codes lookup API
+- `UptimeInstituteClient` — Uptime Institute Tier certification API
+- `EPAClient` — EPA ECHO enforcement API
+- `ICCClient` — ICC building codes API
+
+#### 4 New Tools (20 actions total)
+- `nfpa_compliance` — 5 actions for NFPA/NEC code checks
+- `tier_certification` — 5 actions for Uptime Tier verification
+- `epa_compliance` — 5 actions for EPA regulatory checks
+- `icc_codes` — 5 actions for ICC building code checks
+
+#### 49 New Pydantic Schemas
+- 13 NFPA/NEC models in `safety.py` (fire protection, NEC articles, life safety,
+  sprinkler/alarm, egress)
+- 13 Uptime Tier models in `compliance.py` (tier requirements, redundancy,
+  concurrent maintainability, fault tolerance, certification phases)
+- 16 EPA models in `environmental.py` (NPDES, air quality, RCRA, stormwater, NEPA)
+- 7 ICC models in `compliance.py` (IBC, IFC, IMC, IPC, IECC reports)
+
+#### 4 New Orchestrator Cross-Agent Triggers
+- `SAFETY.nfpa_violation` → Compliance focused check + Risk reassessment
+- `COMPLIANCE.tier_certification_risk` → Critical Path reoptimize + Risk reassessment
+- `COMPLIANCE.icc_code_violation` → Risk reassessment
+- `ENVIRONMENTAL.epa_enforcement_risk` → Risk reassessment + Site Logistics restrict
+  + SMS escalation if >$250k
+
+#### 4 New API Endpoints
+- `GET /api/safety/nfpa` — NFPA/NEC compliance status
+- `GET /api/compliance/icc` — ICC building code compliance
+- `GET /api/compliance/tier-certification` — Uptime Tier certification status
+- `GET /api/environmental/epa` — EPA regulatory compliance
+
+### Changed
+- **Safety Compliance agent** — now registers 7 tools (added NFPA), system prompt
+  includes NFPA 70/72/101/13 knowledge
+- **Compliance Verifier agent** — now registers 4 tools (added ICC + Tier
+  certification), system prompt includes ICC and Uptime Institute
+- **Environmental agent** — now registers 3 tools (added EPA), system prompt
+  includes EPA CWA/CAA/RCRA/NEPA compliance
+- `ConstructionSettings` — 4 new API key env vars (`nfpa_api_key`,
+  `epa_echo_api_key`, `icc_api_key`, `uptime_api_key`)
+
+### Testing
+- 72 new tests (559 total, up from 487)
+- 16 new test files (8 tool tests + 8 integration tests)
+- 3 updated agent test files with new tool counts and prompt assertions
+
 ## [0.2.0] - 2026-02-07
 
 ### Added
