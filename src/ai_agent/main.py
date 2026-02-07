@@ -1,11 +1,16 @@
 """CLI entrypoint for the AI agent."""
 
 from ai_agent.agent import Agent
+from ai_agent.tools import Calculator, CurrentTime, ToolRegistry
 
 
 def main():
     """Run the agent in an interactive loop."""
-    agent = Agent()
+    registry = ToolRegistry()
+    registry.register(Calculator())
+    registry.register(CurrentTime())
+
+    agent = Agent(tool_registry=registry)
     print("AI Agent ready. Type 'quit' to exit.\n")
 
     while True:
@@ -22,6 +27,10 @@ def main():
             break
 
         response = agent.chat(user_input)
+
+        for call in agent.last_tool_calls:
+            print(f"  [tool] {call['tool']}({call['input']}) -> {call['result']}")
+
         print(f"\nAgent: {response}\n")
 
 
