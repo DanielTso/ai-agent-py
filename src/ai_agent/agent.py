@@ -9,11 +9,17 @@ from ai_agent.tools import ToolRegistry
 class Agent:
     """An AI agent that interacts with Claude via the Anthropic API."""
 
-    def __init__(self, settings: Settings | None = None, tool_registry: ToolRegistry | None = None):
+    def __init__(
+        self,
+        settings: Settings | None = None,
+        tool_registry: ToolRegistry | None = None,
+        system_prompt: str | None = None,
+    ):
         self.settings = settings or get_settings()
         self.client = Anthropic(api_key=self.settings.anthropic_api_key)
         self.conversation: list[dict] = []
         self.tool_registry = tool_registry or ToolRegistry()
+        self.system_prompt = system_prompt
 
     def chat(self, user_message: str) -> str:
         """Send a message and get a response from the agent.
@@ -33,6 +39,8 @@ class Agent:
                 "max_tokens": self.settings.max_tokens,
                 "messages": self.conversation,
             }
+            if self.system_prompt:
+                kwargs["system"] = self.system_prompt
             if tools:
                 kwargs["tools"] = tools
 
@@ -50,14 +58,20 @@ class Agent:
                             result = tool.execute(**block.input)
                         else:
                             result = f"Error: unknown tool '{block.name}'"
-                        self.last_tool_calls.append({
-                            "tool": block.name, "input": block.input, "result": result,
-                        })
-                        tool_results.append({
-                            "type": "tool_result",
-                            "tool_use_id": block.id,
-                            "content": result,
-                        })
+                        self.last_tool_calls.append(
+                            {
+                                "tool": block.name,
+                                "input": block.input,
+                                "result": result,
+                            }
+                        )
+                        tool_results.append(
+                            {
+                                "type": "tool_result",
+                                "tool_use_id": block.id,
+                                "content": result,
+                            }
+                        )
                 self.conversation.append({"role": "user", "content": tool_results})
             else:
                 # End of turn — extract text from the final response
