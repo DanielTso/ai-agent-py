@@ -45,6 +45,7 @@ def test_system_prompt_set(mock_agent_cls):
     assert "LEED" in prompt or "leed" in prompt.lower()
     assert "carbon" in prompt.lower()
     assert "permit" in prompt.lower()
+    assert "EPA" in prompt or "epa" in prompt.lower()
 
 
 @patch("construction.agents.base.Agent")
@@ -58,7 +59,8 @@ def test_tools_registered(mock_agent_cls):
     ]
     assert "environmental_query" in tool_names
     assert "weather_forecast" in tool_names
-    assert len(tool_names) == 2
+    assert "epa_compliance" in tool_names
+    assert len(tool_names) == 3
 
 
 @patch("construction.agents.base.Agent")

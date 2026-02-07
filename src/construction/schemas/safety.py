@@ -114,3 +114,140 @@ class SafetyReport(BaseModel):
     osha_300: list[OSHA300Record]
     readiness: InspectionReadinessScore
     generated_at: datetime
+
+
+# --- NFPA / NEC schemas ---
+
+
+class NfpaCheckResult(BaseModel):
+    """Single NFPA/NEC compliance check result."""
+
+    status: str  # compliant/warning/critical
+    findings: list[str]
+    standard: str
+    recommendations: list[str] = []
+
+
+class FireProtectionReport(BaseModel):
+    """NFPA fire protection compliance report."""
+
+    project_id: str
+    fire_barriers: NfpaCheckResult
+    fire_dampers: NfpaCheckResult
+    firestop_systems: NfpaCheckResult
+
+
+class NECArticleCheck(BaseModel):
+    """NEC (NFPA 70) article compliance check."""
+
+    status: str  # compliant/warning/critical
+    findings: list[str]
+    standard: str
+    nec_articles: list[str]
+    recommendations: list[str] = []
+
+
+class NECComplianceReport(BaseModel):
+    """NEC compliance report across articles."""
+
+    project_id: str
+    article_checked: str
+    conductor_sizing: NECArticleCheck
+    overcurrent_protection: NECArticleCheck
+    grounding: NECArticleCheck
+    emergency_systems: NECArticleCheck
+
+
+class OccupantLoadCheck(BaseModel):
+    """NFPA 101 occupant load calculation."""
+
+    floor: str
+    calculated_load: int
+    design_capacity: int
+    compliant: bool
+    standard: str
+
+
+class ExitCapacityCheck(BaseModel):
+    """NFPA 101 exit capacity check."""
+
+    required_exits: int
+    provided_exits: int
+    exit_width_total_in: int
+    required_width_in: int
+    compliant: bool
+    standard: str
+
+
+class TravelDistanceCheck(BaseModel):
+    """NFPA 101 travel distance check."""
+
+    status: str
+    max_travel_ft: int
+    allowed_ft: int
+    location: str
+    compliant: bool
+    standard: str
+    recommendations: list[str] = []
+
+
+class LifeSafetyReport(BaseModel):
+    """NFPA 101 life safety compliance report."""
+
+    project_id: str
+    occupant_load: OccupantLoadCheck
+    exit_capacity: ExitCapacityCheck
+    travel_distance: TravelDistanceCheck
+
+
+class SprinklerCoverage(BaseModel):
+    """NFPA 13 sprinkler coverage check."""
+
+    status: str
+    system_type: str
+    design_standard: str
+    areas_inspected: int
+    deficiencies: list[str]
+    standard: str
+
+
+class WaterSupply(BaseModel):
+    """NFPA 13 water supply adequacy check."""
+
+    status: str
+    static_psi: int
+    residual_psi: int
+    flow_gpm: int
+    required_gpm: int
+    standard: str
+
+
+class FireAlarmCheck(BaseModel):
+    """NFPA 72 fire alarm system check."""
+
+    status: str
+    panel_type: str
+    zones_programmed: int
+    zones_verified: int
+    deficiencies: list[str]
+    standard: str
+    recommendations: list[str] = []
+
+
+class SprinklerAlarmReport(BaseModel):
+    """NFPA 13/72 sprinkler and alarm report."""
+
+    project_id: str
+    sprinkler_coverage: SprinklerCoverage
+    water_supply: WaterSupply
+    fire_alarm: FireAlarmCheck
+
+
+class EgressCheck(BaseModel):
+    """NFPA 101 egress compliance report."""
+
+    project_id: str
+    corridor_width: dict
+    door_swing: NfpaCheckResult
+    exit_access: dict
+    exit_discharge: dict

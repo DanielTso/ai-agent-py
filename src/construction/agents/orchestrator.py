@@ -337,6 +337,98 @@ class Orchestrator:
                 priority=3,
             ))
 
+        # SAFETY.nfpa_violation
+        # -> COMPLIANCE.focused_check (fire/life safety)
+        # -> RISK_FORECASTER.reassess
+        if (
+            source == "safety_compliance"
+            and event_type == "nfpa_violation"
+        ):
+            triggers.append(CrossAgentTrigger(
+                source_agent="safety_compliance",
+                source_event_type="nfpa_violation",
+                target_agent="compliance",
+                target_action="focused_check",
+                data=data,
+                priority=2,
+            ))
+            triggers.append(CrossAgentTrigger(
+                source_agent="safety_compliance",
+                source_event_type="nfpa_violation",
+                target_agent="risk_forecaster",
+                target_action="reassess",
+                data=data,
+                priority=3,
+            ))
+
+        # COMPLIANCE.tier_certification_risk
+        # -> CRITICAL_PATH.reoptimize
+        # -> RISK_FORECASTER.reassess
+        if (
+            source == "compliance_verifier"
+            and event_type == "tier_certification_risk"
+        ):
+            triggers.append(CrossAgentTrigger(
+                source_agent="compliance_verifier",
+                source_event_type="tier_certification_risk",
+                target_agent="critical_path",
+                target_action="reoptimize",
+                data=data,
+                priority=2,
+            ))
+            triggers.append(CrossAgentTrigger(
+                source_agent="compliance_verifier",
+                source_event_type="tier_certification_risk",
+                target_agent="risk_forecaster",
+                target_action="reassess",
+                data=data,
+                priority=2,
+            ))
+
+        # COMPLIANCE.icc_code_violation
+        # -> RISK_FORECASTER.reassess
+        # -> COMMUNICATION.draft_notice
+        if (
+            source == "compliance_verifier"
+            and event_type == "icc_code_violation"
+        ):
+            triggers.append(CrossAgentTrigger(
+                source_agent="compliance_verifier",
+                source_event_type="icc_code_violation",
+                target_agent="risk_forecaster",
+                target_action="reassess",
+                data=data,
+                priority=3,
+            ))
+
+        # ENVIRONMENTAL.epa_enforcement_risk
+        # -> RISK_FORECASTER.reassess
+        # -> SITE_LOGISTICS.restrict_activity
+        # -> escalate if critical
+        if (
+            source == "environmental_sustainability"
+            and event_type == "epa_enforcement_risk"
+        ):
+            triggers.append(CrossAgentTrigger(
+                source_agent="environmental_sustainability",
+                source_event_type="epa_enforcement_risk",
+                target_agent="risk_forecaster",
+                target_action="reassess",
+                data=data,
+                priority=2,
+            ))
+            triggers.append(CrossAgentTrigger(
+                source_agent="environmental_sustainability",
+                source_event_type="epa_enforcement_risk",
+                target_agent="site_logistics",
+                target_action="restrict_activity",
+                data=data,
+                priority=2,
+            ))
+            impact = data.get("impact_dollars", 0)
+            if impact > self.settings.escalation_impact_threshold:
+                await self._escalate_sms(event)
+
         # WEATHER.heat_index > NIOSH_threshold
         # -> SAFETY.heat_illness_check
         # -> WORKFORCE.schedule_adjustment

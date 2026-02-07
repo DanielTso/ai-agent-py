@@ -44,6 +44,7 @@ def test_system_prompt_set(mock_agent_cls):
     assert "OSHA" in prompt
     assert "MSHA" in prompt
     assert "NIOSH" in prompt
+    assert "NFPA" in prompt
     assert "Focus Four" in prompt or "focus four" in prompt.lower()
     assert "stop-work" in prompt.lower() or "stop_work" in prompt.lower()
     assert "1926" in prompt
@@ -64,7 +65,8 @@ def test_tools_registered(mock_agent_cls):
     assert "safety_metrics" in tool_names
     assert "hazard_analysis" in tool_names
     assert "training_tracker" in tool_names
-    assert len(tool_names) == 6
+    assert "nfpa_compliance" in tool_names
+    assert len(tool_names) == 7
 
 
 @patch("construction.agents.base.Agent")

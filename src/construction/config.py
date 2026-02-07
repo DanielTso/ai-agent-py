@@ -56,6 +56,12 @@ class ConstructionSettings(BaseSettings):
     twilio_from_number: str = ""
     pm_phone_number: str = ""
 
+    # Regulatory API keys
+    nfpa_api_key: str = ""
+    epa_echo_api_key: str = ""
+    icc_api_key: str = ""
+    uptime_api_key: str = ""
+
     # Alert dedup
     dedup_ttl_seconds: int = 14400
 

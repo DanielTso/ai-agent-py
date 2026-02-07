@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 from construction.agents.base import ConstructionAgent
 from construction.schemas.common import AgentEvent, DataSource
 from construction.tools.environmental import EnvironmentalQuery
+from construction.tools.epa_compliance import EpaComplianceTool
 from construction.tools.weather import WeatherForecast
 
 
@@ -22,6 +23,7 @@ class EnvironmentalSustainabilityAgent(ConstructionAgent):
     def _register_tools(self) -> None:
         self._tools.register(EnvironmentalQuery())
         self._tools.register(WeatherForecast())
+        self._tools.register(EpaComplianceTool())
 
     def get_system_prompt(self) -> str:
         return (
@@ -42,7 +44,10 @@ class EnvironmentalSustainabilityAgent(ConstructionAgent):
             " conditions are being met\n"
             "5. Weather-driven environmental risk — when rain is"
             " forecast, check erosion controls; when wind is"
-            " forecast, check dust controls\n\n"
+            " forecast, check dust controls\n"
+            "6. EPA compliance — NPDES discharge permits, CAA"
+            " air quality, RCRA hazardous waste, NEPA review"
+            " status, stormwater CGP compliance\n\n"
             "Output your assessment as structured JSON with"
             " sections for permit_alerts, leed_status,"
             " carbon_tracking, and swppp_compliance."

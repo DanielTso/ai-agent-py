@@ -75,3 +75,78 @@ async def compliance_summary():
         "major": 3,
         "minor": 1,
     }
+
+
+@router.get("/icc")
+async def get_icc_compliance():
+    """ICC building code compliance status."""
+    return {
+        "ibc": {
+            "occupancy": "B/S-1",
+            "construction_type": "Type I-B",
+            "status": "compliant",
+            "checks": [
+                {
+                    "code": "IBC Chapter 5",
+                    "item": "Height and area",
+                    "status": "compliant",
+                },
+                {
+                    "code": "IBC Chapter 10",
+                    "item": "Means of egress",
+                    "status": "compliant",
+                },
+            ],
+        },
+        "ifc": {
+            "status": "warning",
+            "findings": [
+                "IFC 33.1 — temporary heating"
+                " clearance not verified"
+            ],
+        },
+        "imc": {"status": "compliant", "findings": []},
+        "ipc": {"status": "compliant", "findings": []},
+        "iecc": {
+            "status": "compliant",
+            "envelope_r_value": "meets_requirement",
+        },
+    }
+
+
+@router.get("/tier-certification")
+async def get_tier_certification():
+    """Uptime Institute Tier certification status."""
+    return {
+        "target_tier": "III",
+        "design_certification": {
+            "status": "in_progress",
+            "score": 88,
+            "findings": [
+                "Cooling distribution path"
+                " review pending"
+            ],
+        },
+        "construction_certification": {
+            "status": "not_started",
+            "score": 0,
+        },
+        "redundancy": {
+            "power": {
+                "ups": "N+1 verified",
+                "generator": "N+1 verified",
+                "ats": "2N verified",
+                "status": "compliant",
+            },
+            "cooling": {
+                "chiller": "N+1 verified",
+                "crah": "2N verified",
+                "status": "compliant",
+            },
+        },
+        "concurrent_maintainability": {
+            "power": "verified",
+            "cooling": "pending_review",
+            "network": "verified",
+        },
+    }

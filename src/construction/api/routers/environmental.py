@@ -84,3 +84,47 @@ async def get_carbon_metrics():
         ],
         "offset_credits": 200,
     }
+
+
+@router.get("/epa")
+async def get_epa_compliance():
+    """EPA regulatory compliance status."""
+    return {
+        "npdes": {
+            "permit_id": "NPD-2025-00142",
+            "status": "active",
+            "last_sampling": "2025-01-30",
+            "compliance": "compliant",
+            "parameters": [
+                {
+                    "name": "pH",
+                    "value": 7.2,
+                    "limit": "6.0-9.0",
+                    "status": "compliant",
+                },
+                {
+                    "name": "TSS",
+                    "value": 28,
+                    "limit": 50,
+                    "unit": "mg/L",
+                    "status": "compliant",
+                },
+            ],
+        },
+        "air_quality": {
+            "pm25": 12.5,
+            "pm10": 42.0,
+            "status": "good",
+            "naaqs_compliant": True,
+        },
+        "rcra": {
+            "generator_status": "SQG",
+            "manifest_current": True,
+            "last_inspection": "2025-01-15",
+            "violations": 0,
+        },
+        "nepa": {
+            "review_type": "Categorical Exclusion",
+            "status": "approved",
+        },
+    }

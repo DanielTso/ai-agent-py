@@ -34,6 +34,8 @@ def test_system_prompt_content(mock_agent_cls):
     assert "fire separation" in prompt
     assert "egress" in prompt
     assert "critical" in prompt
+    assert "ICC" in prompt
+    assert "Uptime Institute" in prompt or "Tier" in prompt
 
 
 @patch("construction.agents.base.Agent")
@@ -41,7 +43,9 @@ def test_tools_registered(mock_agent_cls):
     agent = ComplianceVerifier(settings=_make_settings())
     assert agent._tools.get("bim_query") is not None
     assert agent._tools.get("compliance_database") is not None
-    assert len(agent._tools) == 2
+    assert agent._tools.get("icc_codes") is not None
+    assert agent._tools.get("tier_certification") is not None
+    assert len(agent._tools) == 4
 
 
 @pytest.mark.asyncio

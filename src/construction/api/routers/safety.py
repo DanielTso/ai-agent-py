@@ -160,3 +160,38 @@ async def get_exposure_data():
             "date": "2025-02-01",
         },
     ]
+
+
+@router.get("/nfpa")
+async def get_nfpa_compliance():
+    """NFPA/NEC fire protection and electrical compliance."""
+    return {
+        "fire_protection": {
+            "nfpa_101_life_safety": {
+                "status": "compliant",
+                "exit_capacity": "adequate",
+                "emergency_lighting": "operational",
+            },
+            "nfpa_72_fire_alarm": {
+                "status": "compliant",
+                "zones_covered": 12,
+                "last_test": "2025-01-28",
+            },
+            "nfpa_13_sprinkler": {
+                "status": "warning",
+                "coverage_pct": 95,
+                "deficiency": (
+                    "Level 4 MER needs additional head"
+                ),
+            },
+        },
+        "nec_compliance": {
+            "nfpa_70_nec": {
+                "status": "compliant",
+                "articles_checked": [
+                    "210", "220", "250", "700", "701",
+                ],
+                "findings": [],
+            },
+        },
+    }

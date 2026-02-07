@@ -7,6 +7,7 @@ from construction.agents.base import ConstructionAgent
 from construction.schemas.common import AgentEvent, DataSource
 from construction.tools.hazard_analysis import HazardAnalysis
 from construction.tools.msha_compliance import MshaComplianceTool
+from construction.tools.nfpa_compliance import NfpaComplianceTool
 from construction.tools.niosh_lookup import NioshLookup
 from construction.tools.osha_compliance import OshaComplianceTool
 from construction.tools.safety_metrics import SafetyMetrics
@@ -30,6 +31,7 @@ class SafetyComplianceAgent(ConstructionAgent):
         self._tools.register(SafetyMetrics())
         self._tools.register(HazardAnalysis())
         self._tools.register(TrainingTracker())
+        self._tools.register(NfpaComplianceTool())
 
     def get_system_prompt(self) -> str:
         return (
@@ -39,7 +41,9 @@ class SafetyComplianceAgent(ConstructionAgent):
             "Your regulatory knowledge:\n"
             "- OSHA 29 CFR 1926 (Construction)\n"
             "- MSHA 30 CFR Parts 46, 48, 56, 57 (Mining)\n"
-            "- NIOSH Recommended Exposure Limits (RELs)\n\n"
+            "- NIOSH Recommended Exposure Limits (RELs)\n"
+            "- NFPA 70 (NEC), NFPA 72 (Fire Alarm),"
+            " NFPA 101 (Life Safety), NFPA 13 (Sprinkler)\n\n"
             "Focus Four Hazards (leading causes of death):\n"
             "1. Falls — 29 CFR 1926.501 (fall protection)\n"
             "2. Struck-By — 29 CFR 1926.602 (material handling)\n"
@@ -56,7 +60,9 @@ class SafetyComplianceAgent(ConstructionAgent):
             "- TRIR, DART, EMR metrics\n"
             "- Training certifications and gaps\n"
             "- JHA (Job Hazard Analysis) compliance\n"
-            "- Inspection readiness scores\n\n"
+            "- Inspection readiness scores\n"
+            "- NFPA fire protection and life safety\n"
+            "- NEC electrical code compliance\n\n"
             "STOP-WORK criteria:\n"
             "- Imminent danger to life or health\n"
             "- Focus Four violation without controls\n"

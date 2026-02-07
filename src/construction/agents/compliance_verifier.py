@@ -7,6 +7,8 @@ from construction.agents.base import ConstructionAgent
 from construction.schemas.common import DataSource
 from construction.tools.bim import BIMQueryTool
 from construction.tools.compliance_db import ComplianceDatabaseTool
+from construction.tools.icc_codes import IccCodesTool
+from construction.tools.tier_certification import TierCertification
 
 
 class ComplianceVerifier(ConstructionAgent):
@@ -19,6 +21,8 @@ class ComplianceVerifier(ConstructionAgent):
     def _register_tools(self) -> None:
         self._tools.register(BIMQueryTool())
         self._tools.register(ComplianceDatabaseTool())
+        self._tools.register(IccCodesTool())
+        self._tools.register(TierCertification())
 
     def get_system_prompt(self) -> str:
         return (
@@ -37,7 +41,13 @@ class ComplianceVerifier(ConstructionAgent):
             " BIM model specifications.\n"
             "5. Create deviation tickets for any"
             " non-conformance with BIM overlay"
-            " visualization and severity rating.\n\n"
+            " visualization and severity rating.\n"
+            "6. Verify ICC building code compliance"
+            " (IBC, IFC, IMC, IPC, IECC).\n"
+            "7. Verify Uptime Institute Tier"
+            " certification requirements (redundancy,"
+            " concurrent maintainability, fault"
+            " tolerance).\n\n"
             "SEVERITY CLASSIFICATION:\n"
             "- critical: Tier certification impact,"
             " life safety, or code violation\n"
