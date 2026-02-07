@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 from ai_agent.agent import Agent
 from ai_agent.config import Settings
-from ai_agent.tools import Calculator, CurrentTime, ToolRegistry
+from ai_agent.tools import Calculator, CurrentTime, ToolRegistry, WebSearch
 
 
 def make_settings(**overrides) -> Settings:
@@ -71,6 +71,68 @@ def test_tool_to_api_format():
     assert fmt["name"] == "calculator"
     assert "description" in fmt
     assert fmt["input_schema"]["type"] == "object"
+
+
+# --- WebSearch tests ---
+
+
+def test_web_search_schema():
+    ws = WebSearch()
+    schema = ws.get_input_schema()
+    assert schema["type"] == "object"
+    assert "query" in schema["properties"]
+    assert schema["required"] == ["query"]
+
+
+def test_web_search_to_api_format():
+    ws = WebSearch()
+    fmt = ws.to_api_format()
+    assert fmt["name"] == "web_search"
+    assert "description" in fmt
+    assert fmt["input_schema"]["required"] == ["query"]
+
+
+def test_web_search_execute():
+    ws = WebSearch()
+    mock_results = [
+        {
+            "title": "Python News",
+            "href": "https://example.com/python",
+            "body": "Latest Python updates.",
+        },
+        {
+            "title": "Python 3.13",
+            "href": "https://example.com/py313",
+            "body": "Python 3.13 released.",
+        },
+    ]
+    with patch("ai_agent.tools.DDGS") as mock_ddgs_cls:
+        mock_ddgs_cls.return_value.text.return_value = mock_results
+        result = ws.execute(query="Python news")
+
+    assert "Python News" in result
+    assert "https://example.com/python" in result
+    assert "Latest Python updates." in result
+    assert "Python 3.13" in result
+
+
+def test_web_search_no_results():
+    ws = WebSearch()
+    with patch("ai_agent.tools.DDGS") as mock_ddgs_cls:
+        mock_ddgs_cls.return_value.text.return_value = []
+        result = ws.execute(query="xyznonexistent")
+
+    assert result == "No results found."
+
+
+def test_web_search_error():
+    ws = WebSearch()
+    with patch("ai_agent.tools.DDGS") as mock_ddgs_cls:
+        mock_ddgs_cls.return_value.text.side_effect = Exception("Network error")
+        result = ws.execute(query="test")
+
+    assert result.startswith("Error performing search:")
+    assert "Network error" in result
 
 
 # --- Agent tests (no tools) ---

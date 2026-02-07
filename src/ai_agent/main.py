@@ -1,7 +1,7 @@
 """CLI entrypoint for the AI agent."""
 
 from ai_agent.agent import Agent
-from ai_agent.tools import Calculator, CurrentTime, ToolRegistry
+from ai_agent.tools import Calculator, CurrentTime, ToolRegistry, WebSearch
 
 
 def main():
@@ -9,6 +9,7 @@ def main():
     registry = ToolRegistry()
     registry.register(Calculator())
     registry.register(CurrentTime())
+    registry.register(WebSearch())
 
     agent = Agent(tool_registry=registry)
     print("AI Agent ready. Type 'quit' to exit.\n")
